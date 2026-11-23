@@ -1,0 +1,16 @@
+# Finales de línea: LF en el repositorio y al descargar, salvo los .cmd de Windows, que los
+# necesitan CRLF (con LF, «goto» y las etiquetas de los .cmd pueden fallar).
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.pt binary
+*.bin binary
+*.npz binary
+*.parquet binary
+
+# Las fuentes de las clases son la referencia; los cuadernos se generan con curso/construir.py
+curso/*.ipynb linguist-generated=true

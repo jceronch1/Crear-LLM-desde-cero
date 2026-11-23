@@ -1,0 +1,18 @@
+# Entorno de Python (lo crea instalar.cmd / instalar.sh en cada equipo)
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Lo que se genera al usar la herramienta: se rehace con `cero todo`
+proyectos/
+descargas/
+*.log
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio · LLM desde CERO</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<div class="marco">
+
+  <aside class="lateral">
+    <div class="marca">
+      <div class="marca-signo" aria-hidden="true">0</div>
+      <div>
+        <div class="marca-nombre">LLM desde CERO</div>
+        <div class="marca-sub">laboratorio</div>
+      </div>
+    </div>
+
+    <label class="campo">
+      <span>Proyecto</span>
+      <select id="selector-proyecto" aria-label="Proyecto activo"></select>
+    </label>
+
+    <nav id="menu" aria-label="Recorrido">
+      <a href="#inicio" data-vista="inicio"><span class="num">·</span>Inicio</a>
+      <div class="menu-titulo">El recorrido</div>
+      <a href="#datos" data-vista="datos"><span class="num">1</span>Datos</a>
+      <a href="#tokens" data-vista="tokens"><span class="num">2</span>Tokenizador</a>
+      <a href="#modelo" data-vista="modelo"><span class="num">3</span>Modelo</a>
+      <a href="#atencion" data-vista="atencion"><span class="num">4</span>Atención</a>
+      <a href="#entrenar" data-vista="entrenar"><span class="num">5</span>Entrenar</a>
+      <a href="#generar" data-vista="generar"><span class="num">6</span>Generar</a>
+      <a href="#chat" data-vista="chat"><span class="num">7</span>Conversar</a>
+    </nav>
+
+    <div class="lateral-pie" id="pie-estado"></div>
+  </aside>
+
+  <main id="principal" tabindex="-1">
+    <div id="aviso" class="aviso" role="status" hidden></div>
+
+    <!-- ============================================================ INICIO -->
+    <section data-vista="inicio">
+      <header class="cabecera">
+        <h1>Un LLM y su chatbot, desde cero</h1>
+        <p class="entrada">Este laboratorio enseña por dentro cada pieza del modelo que estás construyendo:
+          cómo se trocea el texto, a qué mira la atención, cómo baja la pérdida al entrenar y cómo se elige
+          cada palabra. Todo se calcula en este ordenador, con tu propio modelo.</p>
+      </header>
+      <div id="recorrido" class="recorrido"></div>
+      <div class="dos-columnas">
+        <div class="tarjeta" id="tarjeta-proyecto"></div>
+        <div class="tarjeta">
+          <h2>Crear un proyecto nuevo</h2>
+          <p class="nota">Lanza el recorrido completo: datos, tokenizador, preentrenamiento y ajuste para conversar.</p>
+          <form id="form-nuevo" class="formulario">
+            <label class="campo"><span>Nombre (sin espacios)</span><input name="nombre" required pattern="[A-Za-z0-9][A-Za-z0-9_.\-]{0,63}" placeholder="mi-primer-llm"></label>
+            <label class="campo"><span>Receta</span><select name="receta" id="nuevo-receta"></select></label>
+            <p class="nota" id="nuevo-receta-nota"></p>
+            <label class="campo"><span>Arquitectura</span>
+              <select name="arquitectura">
+                <option value="moderna">moderna · RoPE, RMSNorm, SwiGLU (2023 en adelante)</option>
+                <option value="gpt2">gpt2 · posiciones aprendidas, GELU (2019)</option>
+                <option value="paper2017">paper2017 · sinusoidal, post-norma, ReLU (el artículo)</option>
+              </select></label>
+            <div class="fila">
+              <label class="campo"><span>Dispositivo</span>
+                <select name="dispositivo"><option value="auto">automático</option><option value="cpu">CPU</option><option value="gpu">GPU</option></select></label>
+              <label class="campo"><span>Minutos (opcional)</span><input name="minutos" type="number" min="0.2" step="any" placeholder="los de la receta"></label>
+            </div>
+            <button class="boton principal" type="submit">Crear y entrenar</button>
+          </form>
+        </div>
+      </div>
+      <div class="tarjeta" id="tarjeta-equipo"></div>
+    </section>
+
+    <!-- ============================================================ DATOS -->
+    <section data-vista="datos" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 1</div>
+        <h1>Los datos</h1>
+        <p class="entrada">Un modelo de lenguaje aprende una sola tarea: <strong>predecir el token siguiente</strong>.
+          No hace falta etiquetar nada: la respuesta correcta ya está en el propio texto, un lugar más a la derecha.</p>
+      </header>
+      <div id="datos-contenido"></div>
+    </section>
+
+    <!-- ============================================================ TOKENS -->
+    <section data-vista="tokens" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 2</div>
+        <h1>El tokenizador</h1>
+        <p class="entrada">El modelo no ve letras: ve números. El tokenizador BPE aprendió, fusionando una y otra vez la
+          pareja de trozos más frecuente, qué pedazos de texto merecen un número propio.</p>
+      </header>
+      <div class="tarjeta">
+        <h2>Escribe y mira cómo se trocea</h2>
+        <textarea id="tok-texto" rows="3" spellcheck="false">Había una vez una gata curiosa llamada Luna. ¿Cuánto es 7 + 8?</textarea>
+        <div class="fila opciones">
+          <label><input type="checkbox" id="tok-numeros"> ver los números</label>
+          <label><input type="checkbox" id="tok-especiales" checked> reconocer tokens especiales como <code>&lt;|fin|&gt;</code></label>
+        </div>
+        <div id="tok-cifras" class="cifras"></div>
+        <div id="tok-piezas" class="piezas" aria-live="polite"></div>
+        <p class="nota">Cada color es un token. El espacio va pegado a la palabra que le sigue. Prueba con una palabra
+          rara, con tu nombre o con un emoji: nunca hay «token desconocido», como mucho se cae a bytes sueltos.</p>
+      </div>
+      <div class="dos-columnas">
+        <div class="tarjeta">
+          <h2>Las fusiones que aprendió</h2>
+          <p class="nota">En el orden en que se aprendieron: las primeras son las parejas más frecuentes del corpus.</p>
+          <div id="tok-fusiones" class="tabla-desplazable"></div>
+          <div class="fila"><button class="boton" id="tok-anteriores">← anteriores</button><span id="tok-pagina" class="nota"></span><button class="boton" id="tok-siguientes">siguientes →</button></div>
+        </div>
+        <div class="tarjeta">
+          <h2>Tokens especiales</h2>
+          <p class="nota">Nunca salen del texto normal. Marcan dónde empieza un documento y quién habla en una conversación.</p>
+          <div id="tok-lista-especiales"></div>
+          <h2 class="con-margen">¿De dónde sale el vocabulario?</h2>
+          <div id="tok-vocab" class="barra-apilada-caja"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ MODELO -->
+    <section data-vista="modelo" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 3</div>
+        <h1>El modelo</h1>
+        <p class="entrada">Un Transformer decodificador: la mitad derecha de la Figura 1 de «Attention Is All You Need»,
+          sin la atención al codificador. Recibe tokens y devuelve una puntuación para cada posible token siguiente.</p>
+      </header>
+      <div class="dos-columnas ancha-izquierda">
+        <div class="tarjeta">
+          <h2>La arquitectura de tu proyecto</h2>
+          <div id="modelo-diagrama" class="diagrama"></div>
+        </div>
+        <div>
+          <div class="tarjeta">
+            <h2>¿Dónde están los parámetros?</h2>
+            <div id="modelo-reparto"></div>
+          </div>
+          <div class="tarjeta">
+            <h2>Sus medidas</h2>
+            <div id="modelo-config"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>Tres generaciones de la misma idea</h2>
+        <p class="nota">El código es el mismo; solo cambian estos interruptores. Crea un proyecto con cada arquitectura y compara sus curvas.</p>
+        <div id="modelo-generaciones" class="tabla-desplazable"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ ATENCIÓN -->
+    <section data-vista="atencion" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 4</div>
+        <h1>La atención</h1>
+        <p class="entrada">Para cada token, el modelo decide cuánto «mira» a cada uno de los anteriores y mezcla su información
+          en esa proporción. Es la ecuación (1) del artículo: <code>softmax(Q·Kᵀ / √d) · V</code>. Aquí se ve con tu modelo.</p>
+      </header>
+      <div class="tarjeta">
+        <div class="fila">
+          <label class="campo crece"><span>Un texto corto</span><input id="at-texto" value="Había una vez una gata curiosa que se llamaba Luna. Luna vivía en el bosque."></label>
+          <label class="campo"><span>Modelo</span><select id="at-etapa"><option value="auto">el más reciente</option><option value="base">base</option><option value="chat">chat</option></select></label>
+          <button class="boton principal" id="at-calcular">Calcular</button>
+        </div>
+        <div id="at-controles" class="fila opciones"></div>
+        <div id="at-mapa" class="mapa-caja"></div>
+        <p class="nota" id="at-nota"></p>
+      </div>
+      <div class="tarjeta">
+        <h2>¿A qué mira un token?</h2>
+        <p class="nota">Pulsa una fila del mapa para elegir el token que pregunta. Aquí se ordenan los tokens a los que más mira.</p>
+        <div id="at-detalle"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ ENTRENAR -->
+    <section data-vista="entrenar" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 5</div>
+        <h1>Entrenar</h1>
+        <p class="entrada">Cada paso: pasar un lote por el modelo, medir la pérdida, calcular el gradiente y mover un poco los pesos.
+          Mira cómo baja la pérdida y cómo cambia lo que escribe el modelo según aprende.</p>
+      </header>
+      <div class="tarjeta">
+        <div class="fila">
+          <label class="campo"><span>Dispositivo</span><select id="en-dispositivo"><option value="auto">automático</option><option value="cpu">CPU</option><option value="gpu">GPU</option></select></label>
+          <label class="campo"><span>Minutos (opcional)</span><input id="en-minutos" type="number" min="0.2" step="any" placeholder="los de la receta"></label>
+          <label class="campo"><span>o pasos</span><input id="en-pasos" type="number" min="10" step="1" placeholder="los de la receta"></label>
+        </div>
+        <div class="fila botones">
+          <button class="boton" data-lanzar="datos">1 · Preparar datos</button>
+          <button class="boton" data-lanzar="base">2 · Preentrenar</button>
+          <button class="boton" data-lanzar="chat">3 · Ajustar para chat</button>
+          <button class="boton" data-lanzar="evaluar">Evaluar</button>
+          <span class="separador"></span>
+          <button class="boton" data-lanzar="base" data-reanudar="1">Reanudar base</button>
+          <button class="boton" data-lanzar="chat" data-reanudar="1">Reanudar chat</button>
+          <button class="boton peligro" id="en-parar" disabled>Pausar</button>
+        </div>
+        <div id="en-tarea" class="tarea"></div>
+      </div>
+      <div class="tarjeta">
+        <div class="fila">
+          <h2 class="crece">La pérdida</h2>
+          <div class="pestanas" id="en-pestanas">
+            <button class="pestana activa" data-etapa="base">preentrenamiento</button>
+            <button class="pestana" data-etapa="chat">ajuste para chat</button>
+          </div>
+        </div>
+        <div id="en-cifras" class="cifras"></div>
+        <div id="en-grafica" class="grafica"></div>
+        <p class="nota" id="en-leyenda"></p>
+      </div>
+      <div class="dos-columnas">
+        <div class="tarjeta">
+          <h2>Lo que escribe mientras aprende</h2>
+          <p class="nota">La misma frase inicial y la misma semilla en cada medición: solo cambia lo que el modelo sabe.</p>
+          <div id="en-muestras" class="muestras"></div>
+        </div>
+        <div class="tarjeta">
+          <h2>La consola</h2>
+          <pre id="en-registro" class="registro">Todavía no se ha lanzado nada desde el laboratorio.</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ GENERAR -->
+    <section data-vista="generar" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 6</div>
+        <h1>Generar</h1>
+        <p class="entrada">El modelo no escribe: da una probabilidad a cada token del vocabulario. Escribir es sortear uno,
+          añadirlo y repetir. La temperatura, top-k y top-p deciden cómo de arriesgado es el sorteo.</p>
+      </header>
+      <div class="dos-columnas ancha-izquierda">
+        <div class="tarjeta">
+          <label class="campo"><span>Texto</span><textarea id="ge-texto" rows="6" spellcheck="false">Había una vez</textarea></label>
+          <div class="fila botones">
+            <button class="boton principal" id="ge-generar">Generar</button>
+            <button class="boton" id="ge-paso">Añadir un token</button>
+            <button class="boton" id="ge-limpiar">Borrar lo generado</button>
+            <span class="nota" id="ge-cifras"></span>
+          </div>
+        </div>
+        <div class="tarjeta">
+          <h2>Mandos</h2>
+          <label class="campo"><span>Modelo</span><select id="ge-etapa"><option value="base">base (continúa texto)</option><option value="chat">chat</option></select></label>
+          <label class="deslizador"><span>Temperatura <output id="ge-temp-v"></output></span><input id="ge-temp" type="range" min="0" max="2" step="0.05" value="0.8"></label>
+          <label class="deslizador"><span>top-k <output id="ge-topk-v"></output></span><input id="ge-topk" type="range" min="0" max="100" step="1" value="40"></label>
+          <label class="deslizador"><span>top-p <output id="ge-topp-v"></output></span><input id="ge-topp" type="range" min="0.05" max="1" step="0.05" value="1"></label>
+          <div class="fila">
+            <label class="campo"><span>Tokens</span><input id="ge-max" type="number" min="1" max="600" value="120"></label>
+            <label class="campo"><span>Semilla</span><input id="ge-semilla" type="number" placeholder="al azar"></label>
+          </div>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>¿Qué token viene ahora?</h2>
+        <p class="nota">Barra clara: la probabilidad que da el modelo. Barra oscura: la que queda tras aplicar los mandos, que es
+          la que se usa en el sorteo. Pulsa un candidato para añadirlo tú al texto.</p>
+        <div id="ge-candidatos" class="candidatos"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ CHAT -->
+    <section data-vista="chat" hidden>
+      <header class="cabecera">
+        <div class="paso">Paso 7</div>
+        <h1>Conversar</h1>
+        <p class="entrada">Un chatbot es el mismo modelo, ajustado con textos en forma de conversación. La conversación entera
+          se le da como una sola secuencia, con tokens especiales que marcan quién habla; él solo continúa.</p>
+      </header>
+      <div class="dos-columnas ancha-izquierda">
+        <div class="tarjeta chat-caja">
+          <div id="chat-mensajes" class="chat-mensajes" aria-live="polite"></div>
+          <div id="chat-sugerencias" class="sugerencias"></div>
+          <form id="chat-form" class="chat-entrada">
+            <input id="chat-texto" autocomplete="off" placeholder="Escribe un mensaje..." aria-label="Mensaje">
+            <button class="boton principal" type="submit">Enviar</button>
+            <button class="boton" type="button" id="chat-nueva">Nueva</button>
+          </form>
+        </div>
+        <div>
+          <div class="tarjeta">
+            <h2>Mandos</h2>
+            <label class="campo"><span>Modelo</span><select id="chat-etapa"><option value="chat">chat (ajustado)</option><option value="base">base (sin ajustar)</option></select></label>
+            <label class="deslizador"><span>Temperatura <output id="chat-temp-v"></output></span><input id="chat-temp" type="range" min="0" max="1.5" step="0.05" value="0.6"></label>
+            <p class="nota">Prueba la misma pregunta con el modelo «base»: seguirá escribiendo como si fuera un cuento. Es la diferencia que aporta el ajuste.</p>
+          </div>
+          <div class="tarjeta">
+            <h2>Lo que ve el modelo</h2>
+            <div id="chat-uso" class="nota"></div>
+            <div id="chat-visto" class="piezas pequenas"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <div class="fila"><h2 class="crece">¿Qué aprendió de verdad?</h2><button class="boton" id="chat-evaluar">Evaluar ahora</button></div>
+        <p class="nota">Preguntas nuevas con respuesta comprobable. «NUNCA visto» significa que ese nombre o esa suma no apareció jamás al entrenar.</p>
+        <div id="chat-evaluacion"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

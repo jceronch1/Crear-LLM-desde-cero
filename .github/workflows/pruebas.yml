@@ -1,0 +1,43 @@
+# En cada cambio: instala el proyecto con su propio instalador (versión CPU) en Linux, Windows
+# y macOS, y ejecuta todas las pruebas, incluidas las 13 clases del curso de principio a fin.
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: ${{ matrix.sistema }}
+    runs-on: ${{ matrix.sistema }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        sistema: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+
+      - name: Preparar Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar con instalar.py (como lo haría un estudiante sin GPU)
+        run: python instalar.py --cpu
+
+      - name: Ejecutar las pruebas
+        shell: bash
+        env:
+          CERO_DISPOSITIVO: cpu
+          MPLBACKEND: Agg
+        run: |
+          if [ -f .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe; else PY=.venv/bin/python; fi
+          "$PY" -X utf8 -m pytest -q

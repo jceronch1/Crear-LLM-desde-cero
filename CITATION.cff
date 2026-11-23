@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Si usas este material en clase o en una investigación, por favor cítalo así."
+title: "Crear un LLM desde cero: herramienta docente para construir un modelo de lenguaje y su chatbot"
+abstract: >-
+  Herramienta y curso en español para construir, entrenar y evaluar desde cero un modelo de
+  lenguaje tipo Transformer y su chatbot, en CPU o GPU. Incluye el motor en PyTorch, trece
+  clases en Jupyter con ejercicios autocorregidos y un laboratorio web para ver el modelo por dentro.
+authors:
+  - given-names: Jhoni
+    family-names: Cerón
+type: software
+version: 1.0.0
+date-released: 2026-11-23
+license: MIT
+repository-code: "https://github.com/jceronch1/Crear-LLM-desde-cero"
+keywords:
+  - modelo de lenguaje
+  - LLM
+  - Transformer
+  - chatbot
+  - PyTorch
+  - educación
+  - español
