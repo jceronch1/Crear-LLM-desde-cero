@@ -11,6 +11,7 @@ Herramienta docente en español · funciona en CPU o en GPU · curso de 13 clase
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.15-EE4C2C?logo=pytorch&logoColor=white)
 ![Idioma](https://img.shields.io/badge/idioma-espa%C3%B1ol-0f6e66)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
+[![Modelo en Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20modelo-Jhonic%2Fcero--nano--es-ffcc4d)](https://huggingface.co/Jhonic/cero-nano-es)
 
 <img src="docs/img/laboratorio-chat.png" width="820" alt="El chatbot entrenado desde cero respondiendo en el laboratorio: cuenta un cuento sobre un gato llamado Milo, recuerda su nombre y reconoce que no sabe cuál es la capital de Francia">
 
@@ -96,6 +97,10 @@ Esto es lo que verás al entrenar (salida real, abreviada; en GPU tarda ~1 minut
 
 Fíjate en las muestras: en el paso 150 ya escribe frases, pero cambia de protagonista en cada
 una; al final mantiene el nombre de principio a fin. Eso lo aprende la **atención**.
+
+> 🤗 **¿Sin tiempo para entrenar?** Este mismo modelo (la versión base y el chatbot) está publicado
+> en Hugging Face: [**Jhonic/cero-nano-es**](https://huggingface.co/Jhonic/cero-nano-es). Su ficha
+> explica cómo descargarlo y conversar con él en tres pasos.
 
 ## Cómo funciona
 
