@@ -11,7 +11,7 @@ Herramienta docente en español · funciona en CPU o en GPU · curso de 13 clase
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.15-EE4C2C?logo=pytorch&logoColor=white)
 ![Idioma](https://img.shields.io/badge/idioma-espa%C3%B1ol-0f6e66)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
-[![Modelo en Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20modelo-Jhonic%2Fcero--nano--es-ffcc4d)](https://huggingface.co/Jhonic/cero-nano-es)
+[![Modelos en Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20modelos-Jhonic%2Fcero--%2A--es-ffcc4d)](https://huggingface.co/Jhonic)
 
 <img src="docs/img/laboratorio-chat.png" width="820" alt="El chatbot entrenado desde cero respondiendo en el laboratorio: cuenta un cuento sobre un gato llamado Milo, recuerda su nombre y reconoce que no sabe cuál es la capital de Francia">
 
@@ -99,8 +99,9 @@ Fíjate en las muestras: en el paso 150 ya escribe frases, pero cambia de protag
 una; al final mantiene el nombre de principio a fin. Eso lo aprende la **atención**.
 
 > 🤗 **¿Sin tiempo para entrenar?** Este mismo modelo (la versión base y el chatbot) está publicado
-> en Hugging Face: [**Jhonic/cero-nano-es**](https://huggingface.co/Jhonic/cero-nano-es). Su ficha
-> explica cómo descargarlo y conversar con él en tres pasos.
+> en Hugging Face: [**Jhonic/cero-nano-es**](https://huggingface.co/Jhonic/cero-nano-es), junto con
+> las otras tres recetas ya entrenadas ([tabla de recetas](#recetas-del-portátil-a-la-gpu)). Cada
+> ficha explica cómo descargarlo y conversar con él en tres pasos.
 
 ## Cómo funciona
 
@@ -179,12 +180,12 @@ Unas 11 horas en total. 👩‍🏫 Para docentes: [guía del profesor](curso/GU
 Una receta es un proyecto ya dimensionado. Tiempos del recorrido completo medidos en un portátil
 con Ryzen 7 8845HS y RTX 4070 de 8 GB; `cero comprobar` los estima en tu equipo.
 
-| Receta | Parámetros | Corpus | GPU | CPU |
-|---|---:|---|---:|---:|
-| `nano` | 0,9 M | cuentos sintéticos, sin descargas | ~2 min | ~6 min |
-| `micro` | 5,8 M | TinyStories en español (40 M de caracteres) | ~3 min | ~1 h |
-| `mini` | 15,7 M | TinyStories en español (120 M de caracteres) | ~19 min | — |
-| `base` | 35,7 M | TinyStories en español (248 M de caracteres) | ~50 min | — |
+| Receta | Parámetros | Corpus | GPU | CPU | Ya entrenado |
+|---|---:|---|---:|---:|---|
+| `nano` | 0,9 M | cuentos sintéticos, sin descargas | ~2 min | ~6 min | [🤗 cero-nano-es](https://huggingface.co/Jhonic/cero-nano-es) |
+| `micro` | 5,8 M | TinyStories en español (40 M de caracteres) | ~3 min | ~1 h | [🤗 cero-micro-es](https://huggingface.co/Jhonic/cero-micro-es) |
+| `mini` | 15,7 M | TinyStories en español (120 M de caracteres) | ~19 min | — | [🤗 cero-mini-es](https://huggingface.co/Jhonic/cero-mini-es) |
+| `base` | 35,7 M | TinyStories en español (248 M de caracteres) | ~50 min | — | [🤗 cero-base-es](https://huggingface.co/Jhonic/cero-base-es) |
 
 Las recetas con cuentos reales descargan el corpus (258 MB) la primera vez. Cada receta se puede
 montar con tres generaciones del Transformer: `--arquitectura paper2017`, `gpt2` o `moderna`, y se
